@@ -24,8 +24,8 @@ turns those probabilities into personalized top-N song recommendations.
 
 ```bash
 pip install -r requirements.txt
-python3 main.py                              # synthetic data, full run
-python3 main.py --rows 60000 --rounds 300    # quick run
+python3 main.py --rows 2000000 --rounds 400  # real KKBox data (see below)
+python3 main.py --rows 60000 --rounds 300    # quick run / synthetic fallback
 python3 main.py --user <msno> --top-n 20     # recommend for a specific user
 ```
 
@@ -53,13 +53,21 @@ KKBox does not ship per-play timestamps; the loader derives a monotonic
 pseudo-timestamp from the (chronological) row order so the recency features
 still apply. Replace it with the real column if your log has one.
 
-## Example run (synthetic, 60k events)
+## Results
+
+Real KKBox data, first 2M plays, 400 boosting rounds, chronological 80/20 split:
 
 | metric | value |
 | --- | --- |
-| AUC | 0.633 |
-| average precision | 0.778 |
-| log loss | 0.608 |
+| AUC | 0.781 |
+| average precision | 0.827 |
+| log loss | 0.554 |
 
-Top features by gain: `user_repeat_rate`, `source_system_tab`, `artist_name`,
-`city`, `genre_ids`, `song_repeat_rate`.
+Top features by gain: `user_repeat_rate`, `artist_name`, `source_type`,
+`song_repeat_rate`, `user_play_count`, `source_screen_name`.
+
+The synthetic fallback (60k events) scores AUC 0.633 — enough to confirm the
+pipeline works without the download.
+
+`--rows` exists because the full 7.4M-row log needs roughly 16 GB of RAM during
+feature construction; 2M rows fits comfortably in 8 GB.

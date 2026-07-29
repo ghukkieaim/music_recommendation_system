@@ -40,10 +40,11 @@ def _load_kkbox(data_dir: Path, n_rows: int | None) -> Dataset:
 
     if "timestamp" not in plays.columns:
         # KKBox ships plays in chronological order without explicit stamps;
-        # use the row order as a monotonic pseudo-timestamp (hourly spacing).
-        plays["timestamp"] = pd.Timestamp("2017-01-01") + pd.to_timedelta(
-            np.arange(len(plays)), unit="h"
-        )
+        # use the row order as a monotonic pseudo-timestamp spread over the
+        # ~6 month collection window.
+        span = pd.Timedelta(days=180)
+        step = span / max(len(plays), 1)
+        plays["timestamp"] = pd.Timestamp("2017-01-01") + step * np.arange(len(plays))
     else:
         plays["timestamp"] = pd.to_datetime(plays["timestamp"])
 
