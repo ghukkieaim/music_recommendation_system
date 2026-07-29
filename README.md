@@ -29,6 +29,12 @@ python3 main.py --rows 60000 --rounds 300    # quick run
 python3 main.py --user <msno> --top-n 20     # recommend for a specific user
 ```
 
+Interactive demo:
+
+```bash
+streamlit run app.py
+```
+
 Artifacts land in `artifacts/`: `model.txt`, `metrics.json`,
 `feature_importance.csv`, `recommendations.csv`.
 
